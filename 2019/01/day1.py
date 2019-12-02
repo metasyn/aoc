@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 import math
 
+
 def compute(x: int) -> int:
     return math.floor((x / 3.0)) - 2
+
 
 def compute_with_fuel(x: int) -> int:
     remainder = compute(x)
@@ -14,11 +16,12 @@ def compute_with_fuel(x: int) -> int:
 
     return sum(fuels)
 
+
 if __name__ == '__main__':
     with open('input.txt', 'r') as fp:
-        modules = fp.readlines()
+        raw_modules = fp.readlines()
 
-    modules = [int(x) for x in modules if len(modules) > 0]
+    modules = [int(x) for x in raw_modules if len(x) > 0]
 
     print("part 1")
     print(sum([compute(x) for x in modules]))

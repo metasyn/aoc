@@ -127,8 +127,8 @@ for line in lines:
   if passport.fields >= 7:
     validOne += 1
 
-  if not passport.invalid and passport.fields >= 7:
-    validTwo += 1
+    if not passport.invalid:
+      validtwo += 1
 
 echo "one"
 echo validOne

@@ -37,7 +37,7 @@ proc safeParse(str: string): int =
 
 # Quite wild; i can pass both the field name and the field value
 # as a single untyped parameter here! kinda scary but nice
-template assign(p: Passport, a: untyped, b: bool) =
+template assign(p: Passport, a: typed, b: bool) =
   if b:
     p.a = a
   else:

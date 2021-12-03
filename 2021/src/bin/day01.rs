@@ -3,24 +3,14 @@ mod util;
 use std::io::Result;
 
 fn main() -> Result<()> {
-    let input: Vec<i32> = util::load_file_split("input/day01.txt").unwrap()
+    let input: Vec<i32> = util::load_file_split("input/day01.txt")
+        .unwrap()
         .iter()
         .filter(|x| !x.is_empty())
         .map(|x| x.parse::<i32>().unwrap())
         .collect();
 
-    let sample = vec![
-        199,
-        200,
-        208,
-        210,
-        200,
-        207,
-        240,
-        269,
-        260,
-        263,
-    ];
+    let sample = vec![199, 200, 208, 210, 200, 207, 240, 269, 260, 263];
 
     // Part 1
     let ans = count_increases(&sample);
@@ -46,7 +36,7 @@ fn count_increases(vec: &Vec<i32>) -> i32 {
     loop {
         let next = iter.next();
         if next.is_none() {
-            break
+            break;
         }
         if next > current {
             ans += 1

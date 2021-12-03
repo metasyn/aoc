@@ -1,6 +1,5 @@
 mod util;
 
-
 use std::str::FromStr;
 
 #[derive(Debug)]
@@ -29,12 +28,14 @@ impl FromStr for Line {
             'u' => Direction::Up,
             _ => Direction::Down,
         };
-        let distance : i32 = split[1].parse::<i32>().unwrap();
+        let distance: i32 = split[1].parse::<i32>().unwrap();
 
-        Ok(Line { direction: direction, distance: distance})
+        Ok(Line {
+            direction: direction,
+            distance: distance,
+        })
     }
 }
-
 
 fn calculate_position(vec: &Vec<Line>) -> i32 {
     let mut distance = 0;
@@ -59,10 +60,10 @@ fn calculate_position_with_aim(vec: &Vec<Line>) -> i32 {
             Direction::Forward => {
                 distance += v.distance;
                 depth += aim * v.distance;
-            },
+            }
             Direction::Up => {
                 aim -= v.distance;
-            },
+            }
             Direction::Down => {
                 aim += v.distance;
             }
@@ -72,7 +73,8 @@ fn calculate_position_with_aim(vec: &Vec<Line>) -> i32 {
 }
 
 fn main() -> Result<(), ()> {
-    let _input: Vec<Line> = util::load_file_split("input/day02.txt").unwrap()
+    let _input: Vec<Line> = util::load_file_split("input/day02.txt")
+        .unwrap()
         .iter()
         .filter(|x| !x.is_empty())
         .map(|x| Line::from_str(x))
@@ -85,11 +87,12 @@ fn main() -> Result<(), ()> {
         "forward 8",
         "up 3",
         "down 8",
-        "forward 2"
-    ].iter()
-     .map(|x| Line::from_str(x))
-     .filter_map(|x| x.ok())
-     .collect();
+        "forward 2",
+    ]
+    .iter()
+    .map(|x| Line::from_str(x))
+    .filter_map(|x| x.ok())
+    .collect();
 
     let ans = calculate_position(&sample);
     println!("{} should be 150", ans);

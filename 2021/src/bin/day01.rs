@@ -1,10 +1,8 @@
 mod util;
 
 use std::io::Result;
-use std::env;
 
 fn main() -> Result<()> {
-    println!("{:?}", env::current_dir()?);
     let input: Vec<i32> = util::load_file_split("input/day01.txt").unwrap()
         .iter()
         .filter(|x| !x.is_empty())

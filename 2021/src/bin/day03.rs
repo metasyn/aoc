@@ -1,6 +1,6 @@
 mod util;
 
-fn calculate_consumption(vec: &Vec<&str>) -> i32 {
+fn calculate_consumption(vec: &Vec<&str>) -> (i32, i32) {
     let size = vec[0].len();
     let mut gamma = 0;
 
@@ -19,7 +19,7 @@ fn calculate_consumption(vec: &Vec<&str>) -> i32 {
             }
         }
 
-        if ones > zeros {
+        if ones >= zeros {
             gamma = gamma | 1;
         }
     }
@@ -28,10 +28,61 @@ fn calculate_consumption(vec: &Vec<&str>) -> i32 {
     // so we need to create a mask
     let full_mask = !0 << size;
     let epsilon = !gamma ^ full_mask;
-    return epsilon * gamma;
+    return (gamma, epsilon);
 }
 
-fn main() -> Result<(), ()> {
+fn from_bin(x: &str) -> i32 {
+    return i32::from_str_radix(x, 2).unwrap();
+}
+
+fn calculate_ratings(vec: &Vec<&str>) -> (i32, i32) {
+    // Calculate this twice for edge cases sadly
+    // I'm sure there is a way to avoid this though.
+
+    // Get the initial size
+    let size = vec[0].len();
+    let mut oxy = vec.clone();
+    let mut co2 = vec.clone();
+
+    // For each bit left
+    for bit in (0..size).rev() {
+        // Calculate most common of what is left
+        // Get position mask
+        let bit_mask = 1 << bit;
+
+        // Flip the bits of the target one we're going to filter
+        // if the bit isn't set, so that we can still use the single
+        // positive bit on the bit mask to filter
+        if oxy.len() > 1 {
+            let (gamma, _) = calculate_consumption(&oxy);
+            let is_set = gamma & bit_mask > 0;
+
+            if is_set {
+                oxy.retain(|&x| (from_bin(x) & bit_mask) > 0);
+            } else {
+                oxy.retain(|&x| (!from_bin(x) & bit_mask) > 0);
+            }
+        }
+
+        // repeat with inverse of gamma (which is epsilon)
+        // as well as the co2 vec
+
+        if co2.len() > 1 {
+            let (_, eps) = calculate_consumption(&co2);
+            let is_set = eps & bit_mask > 0;
+
+            if is_set {
+                co2.retain(|&x| (from_bin(x) & bit_mask) > 0);
+            } else {
+                co2.retain(|&x| (!from_bin(x) & bit_mask) > 0);
+            }
+        }
+    }
+
+    return (from_bin(oxy[0]), from_bin(co2[0]));
+}
+
+fn main() {
     let raw = util::load_file_split("input/day03.txt").unwrap();
     let _input: Vec<&str> = raw
         .iter()
@@ -44,11 +95,35 @@ fn main() -> Result<(), ()> {
         "00010", "01010",
     ];
 
-    let ans = calculate_consumption(&sample);
-    println!("{} should be 198", ans);
+    let (g, e) = calculate_consumption(&sample);
+    println!("{} should be 198", g * e);
 
-    let ans = calculate_consumption(&_input);
-    println!("part 1 answer is {}", ans);
+    let (o, c) = calculate_ratings(&sample);
+    println!("{} should be 230", o * c);
 
-    return Ok(());
+    let (g, e) = calculate_consumption(&_input);
+    println!("part 1 answer is {}", g * e);
+
+    let (o, c) = calculate_ratings(&_input);
+    println!("part 2 answer is {} ", o * c);
+
+}
+use std::fs::File;
+use std::io::{BufReader, Read, Result};
+use std::path::Path;
+
+pub fn load_file<P: AsRef<Path>>(path: P) -> Result<String> {
+    let file = File::open(path)?;
+    let mut buf_reader = BufReader::new(file);
+    let mut contents = String::new();
+    buf_reader.read_to_string(&mut contents)?;
+    return Ok(contents);
+}
+
+pub fn load_file_split<P: AsRef<Path>>(path: P) -> Result<Vec<String>> {
+    return Ok(load_file(path)
+        .unwrap()
+        .split("\n")
+        .map(|x| x.to_string())
+        .collect());
 }

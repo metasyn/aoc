@@ -17,3 +17,7 @@ pub fn load_file_split<P: AsRef<Path>>(path: P) -> Result<Vec<String>> {
         .map(|x| x.to_string())
         .collect());
 }
+
+pub fn remove_whitespace(s: &str) -> String {
+    s.split_whitespace().collect()
+}
